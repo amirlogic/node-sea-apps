@@ -8,7 +8,7 @@ const { exec } = require('node:child_process');
 const SERVER_PORT = 9000
 
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
 
     //const parsed = url.parse(req.url, true)       // Deprecated
 
@@ -60,8 +60,23 @@ const server = http.createServer((req, res) => {
             res.end()
 
         }
-        else if (reqUrl == "/other") {
+        else if (reqUrl == "/ffmpeg") {
 
+            console.log(reqUrl)
+
+            exec(`ffmpeg -help`,(err,stdout)=>{
+
+                if(err){
+
+                    console.error(err)
+                }
+
+                console.log(stdout)
+
+                res.write( stdout ) 
+                res.end()
+            })
+            
             /* screen = 'other'
 
             let mhtml = getHtml([
@@ -71,8 +86,8 @@ const server = http.createServer((req, res) => {
 
             ]) */
 
-            res.write(  ) // webpage("Cytology",xhead,pageBody(MAIN_TITLE,"Other cells",mhtml))
-            res.end()
+            // res.write( xout )
+            // res.end()
         }
         else{
 
