@@ -1,7 +1,7 @@
 
 const http = require("http");
 
-const url = require("url");
+const path = require("path")
 
 const { exec } = require('node:child_process');
 
@@ -10,53 +10,48 @@ const SERVER_PORT = 9000
 
 const server = http.createServer(async (req, res) => {
 
-    //const parsed = url.parse(req.url, true)       // Deprecated
 
     const pgurl = new URL('http://localhost'+req.url)
-
-    //const reqUrl = parsed.pathname
 
     const reqUrl = pgurl.pathname
 
     const params = pgurl.searchParams
 
-    // let screen = 'leucocytes';
-
-    // let cell
 
     if (req.method == "GET") {
 
 
-        if (reqUrl == "/" || reqUrl == "/leucocytes") {
+        if (reqUrl == "/" || reqUrl == "/home") {
 
-           /*  screen = 'leucocytes'
+            res.write( `<html>
+                            <head>
+                                <title>Send File</title>
+                            </head>
+                            <body>
+                                <div style="padding:20px;">
+                                    <form action="/file" method="get">
+                                        <div><input type="text" name="filepath" /></div>
+                                        <div><input type="file" id="fname" name="fname" /></div>
+                                        <input type="hidden" id="filename" name="filename" />    
+                                        <div><input type="submit" /></div>
+                                    </form>
+                                </div>
+                                <script>
 
-                cell = params.get('cell') || payload[screen][0].key 
+                                    document.getElementById("fname").addEventListener(
+                                        "change",
+                                        (event) => {
+                                            
+                                            console.log(event.target.files[0])
+                                            document.getElementById('filename').value = event.target.files[0].name
+                                        },
+                                        false,
+                                    );
 
-                let mhtml = getHtml([
-                    
-                    [ "b290a78d-4d92-4c2f-8f5c-6f8e9949c082", 
-                    { payload:payload[screen], bindto:"imageselectorleftcol", imgkey:cell } ]
+                                </script>
+                            </body>
+                        </html>`)
 
-                ]) */
-
-           /*  }
-            else if( cell === 'monocytebis' ){
-
-                let mhtml = getHtml([
-                    
-                    [ "507bd06d-3806-4e72-a8ed-514e09fc40b1", 
-                    { payload:payload[screen], bindto:"imageselectorleftcol", imgkey:cell } ]
-
-                ])
-            }
-            else{
-
-                let mhtml = "<p>Error</p>"
-            } */
-
-
-            res.write( "<html>It works</html>" )   // webpage("Cytology",xhead,pageBody(MAIN_TITLE,"Normal Leucocytes",mhtml))
             res.end()
 
         }
@@ -64,7 +59,7 @@ const server = http.createServer(async (req, res) => {
 
             console.log(reqUrl)
 
-            exec(`ffmpeg -help`,(err,stdout)=>{
+            exec(`ffmpeg -L`,(err,stdout)=>{
 
                 if(err){
 
@@ -77,17 +72,24 @@ const server = http.createServer(async (req, res) => {
                 res.end()
             })
             
-            /* screen = 'other'
+           
+        }
+        else if (reqUrl == "/file") {
 
-            let mhtml = getHtml([
-                
-                [ "b290a78d-4d92-4c2f-8f5c-6f8e9949c082", 
-                { payload:payload[screen], bindto:"imageselectorleftcol", imgkey:payload[screen][0].key } ]
+            console.log(params)
 
-            ]) */
+            const filePath = path.join(params.get('filepath'), params.get('fname'))
 
-            // res.write( xout )
-            // res.end()
+            res.write(`<html>
+                <head>
+                    <title>File</title>
+                </head>
+                <body>
+                    ${filePath}
+                </body>        
+               </html>`)
+
+            res.end()
         }
         else{
 
@@ -98,9 +100,20 @@ const server = http.createServer(async (req, res) => {
 
     } else if (req.method == "POST") {
 
-        if (reqUrl == "/hello") {
+        if (reqUrl == "/file") {
 
-            res.write("hello world")
+            console.log(req.body.fname)
+
+            const filePath = path.join(uploadDir, fileName)
+
+            res.write(`<html>
+                        <head>
+                            <title>post</title>
+                        </head>
+                        <body>
+                            ${req.body.fname}
+                        </body>        
+                       </html>`)
             res.end()
         }
     }
