@@ -1,12 +1,19 @@
-# mupdf-sea
+# MediaWeb GUI
 
-Mupdf.js Node Single Executable App
+Web-based App to control ImageMagick and FFMEPG.
+
+
+## ImageMagick
+
+Convert and resize
+
+
+## FFMEPG
+
+
+
 
 ## Notes
 
-Mupdf.js is a ESM module
 
-Node SEA currently do not support importing external modules (only built-in modules)
-
-Could not create a bundle using Esbuild
 
