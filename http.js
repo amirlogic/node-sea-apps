@@ -40,16 +40,16 @@ const server = http.createServer(async (req, res) => {
                                 <div style="padding:20px;">
                                     <h1>MediaWebGui</h1>
                                     <form action="/file" method="get">
-                                        <div>
+                                        <div class="p-2">
                                             <select name="target">
                                                 <option value="ffmpeg">FFMPEG</option>
                                                 <option value="magick">Image Magick</option>
                                             </select>
                                         </div>
-                                        <div><input type="text" name="filepath" /></div>
-                                        <div><input type="file" id="fname" name="fname" /></div>
+                                        <div class="p-2"><input type="text" name="filepath" /></div>
+                                        <div class="p-2"><input type="file" id="fname" name="fname" /></div>
                                         <input type="hidden" id="filename" name="filename" />    
-                                        <div><input type="submit" /></div>
+                                        <div class="p-2"><input type="submit" /></div>
                                     </form>
                                 </div>
                                 <div class="p-2">
@@ -85,8 +85,21 @@ const server = http.createServer(async (req, res) => {
 
             if( params.get('target') == 'ffmpeg' ){
 
-                res.write(webpage("File","",`<h1>FFMPEG</h1>
-                                             <div>${filePath}</div>`))
+                res.write(webpage("File","",`<div class="container">
+                                                <h1>FFMPEG</h1>
+                                                <div><pre>${filePath}</pre></div>
+                                                        <div class="row p-2">
+                                                            <div class="col">
+                                                                <form method="get" action="/ffmpeg">
+                                                                    Convert to: <input type="text" name="nwext" size="5" />
+                                                                    <input type="hidden" name="target" value="convert" />
+                                                                    <input type="hidden" name="fname" value="${filePath}" />
+                                                                    <input type="submit" />
+                                                                </form>
+                                                            </div>
+                                                            <div class="col"><a href="/ffmpeg?f=${filePath}&target=reverse">Reverse</a></div>
+                                                        </div>
+                                                </div>`))
                 res.end()
 
             }
@@ -244,9 +257,54 @@ const server = http.createServer(async (req, res) => {
         }
         else if (reqUrl == "/ffmpeg") {
 
-            if( params.get('target') == 'version' ){
+            if( params.get('target') == 'convert' ){
 
+                let fname = params.get('fname')
 
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+
+                let cmd = `ffmpeg -i "${fname}" "${fnwx}.${params.get('nwext')}"`
+
+                //let ext = fname.substring(fname.lastIndexOf('.'))
+
+                exec(cmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err)
+                    }
+
+                    res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                    res.write(`${cmd}\n${stdout}\nDone!`)
+
+                    res.end()
+                })
+
+            }
+            else if( params.get('target') == 'reverse' ){
+
+                let fname = params.get('f')
+
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+
+                let ext = fname.substring(fname.lastIndexOf('.'))
+
+                let revcmd = `ffmpeg -i "${fname}" -vf reverse "${fnwx}_reversed${ext}"`
+
+                exec(revcmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err.toString())
+                    }
+
+                    res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                    res.write(`${revcmd}\n${stdout}\nDone!`)
+
+                    res.end()
+                })
             }
             else{
 
@@ -258,9 +316,9 @@ const server = http.createServer(async (req, res) => {
                     }
 
                     res.write(webpage("Version","",`<div class="container">
-                                                    <h1>FFMPEG</h1>
-                                                    <div><pre>${stdout}</pre></div>
-                                                 </div>`))
+                                                        <h1>FFMPEG</h1>
+                                                        <div><pre>${stdout}</pre></div>
+                                                    </div>`))
 
                     res.end()
                 })
