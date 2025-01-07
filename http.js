@@ -7,6 +7,26 @@ const { exec } = require('node:child_process');
 
 const SERVER_PORT = 9000
 
+const FFMPEG_SVG = `<svg fill="#000000" width="60px" height="60px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg"><path d="M21.72 17.91V6.5l-.53-.49L9.05 18.52l-1.29-.06L24 1.53l-.33-.95-11.93 1-5.75 6.6v-.23l4.7-5.39-1.38-.77-9.11.77v2.85l1.91.46v.01l.19-.01-.56.66v10.6c.609-.126 1.22-.241 1.83-.36L14.12 5.22l.83-.04L0 21.44l9.67.82 1.35-.77 6.82-6.74v2.15l-5.72 5.57 11.26.95.35-.94v-3.16l-3.29-.18a64.66 64.66 0 0 0 1.28-1.23z"/></svg>`
+
+const MAGICK_SVG = `<svg height="60px" width="60px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                        viewBox="0 0 512.002 512.002" xml:space="preserve">
+                    <path style="fill:#806749;" d="M300.875,211.126l-54.033-16.788L4.892,436.289c-6.521,6.521-6.521,17.086,0,23.607l47.214,47.214
+                        c3.261,3.261,7.533,4.891,11.803,4.891c4.272,0,8.543-1.63,11.803-4.891l241.95-241.95L300.875,211.126z"/>
+                    <path style="fill:#5F4D37;" d="M300.875,211.126L300.875,211.126L28.499,483.503l23.607,23.607
+                        c3.261,3.261,7.533,4.891,11.803,4.891c4.272,0,8.543-1.63,11.803-4.891l241.95-241.95L300.875,211.126z"/>
+                    <path style="fill:#FFDA44;" d="M320.435,347.033c-0.869,0-1.74-0.066-2.609-0.207c-6.283-0.989-11.445-5.467-13.336-11.531
+                        l-30.292-97.494l-97.494-30.292c-6.065-1.891-10.543-7.054-11.531-13.336c-0.999-6.272,1.663-12.564,6.847-16.238l83.354-58.953
+                        L254.07,16.913c-0.076-6.358,3.456-12.206,9.119-15.096c5.663-2.88,12.466-2.304,17.564,1.5l81.81,61.051l96.678-32.78
+                        c5.989-2.021,12.662-0.489,17.162,4.011c4.5,4.489,6.043,11.152,4.01,17.162l-32.78,96.678l61.051,81.81
+                        c3.804,5.097,4.38,12.04,1.5,17.703c-2.858,5.597-8.608,9.258-14.879,9.258c-0.066,0-0.141,0-0.217,0l-102.069-1.444l-58.953,83.283
+                        C330.902,344.517,325.804,347.033,320.435,347.033z"/>
+                    <path style="fill:#EEBF00;" d="M476.403,35.598L274.199,237.802l30.292,97.494c1.891,6.065,7.054,10.543,13.336,11.531
+                        c0.869,0.141,1.74,0.207,2.609,0.207c5.369,0,10.466-2.587,13.629-7.054l58.953-83.213l102.069,1.442c0.076,0,0.152,0,0.217,0
+                        c6.272,0,12.021-3.661,14.879-9.258c2.88-5.663,2.304-12.536-1.5-17.634l-61.051-81.844l32.781-96.696
+                        C482.447,46.766,480.903,40.086,476.403,35.598z"/>
+                    </svg>`
+
 function webpage(title='untitled',xhead='',body=''){
 
     return `<html>
@@ -109,7 +129,7 @@ const server = http.createServer(async (req, res) => {
             if( params.get('target') == 'ffmpeg' ){
 
                 res.write(webpage("File","",`<div class="container">
-                                                <h1>FFMPEG</h1>
+                                                ${FFMPEG_SVG}<h1>FFMPEG</h1>
                                                     <div>
                                                         <pre>${filePath}</pre>
                                                     </div>
@@ -127,16 +147,16 @@ const server = http.createServer(async (req, res) => {
                                                                 <form method="get" action="/ffmpeg">
                                                                     <div class="p-2">Split</div>
                                                                     <div class="p-2">
-                                                                        <span style="width:50px;">From:</span> 
-                                                                        <input type="text" name="fhrs" maxlength="2" size="2" value="00" />:
-                                                                        <input type="text" name="fmin" maxlength="2" size="2" value="00" />:
-                                                                        <input type="text" name="fsec" maxlength="2" size="2" value="00" />
+                                                                        <span>From:</span> 
+                                                                        <input type="text" name="fhrs" maxlength="2" size="2" value="00" required />:
+                                                                        <input type="text" name="fmin" maxlength="2" size="2" value="00" required />:
+                                                                        <input type="text" name="fsec" maxlength="2" size="2" value="00" required />
                                                                     </div>
                                                                     <div class="p-2">
-                                                                        <span style="width:50px;">To:</span>
-                                                                        <input type="text" name="thrs" maxlength="2" size="2" value="00" />:
-                                                                        <input type="text" name="tmin" maxlength="2" size="2" value="00" />:
-                                                                        <input type="text" name="tsec" maxlength="2" size="2" value="00" />
+                                                                        <span style="margin-right:20px;">To:</span>
+                                                                        <input type="text" name="thrs" maxlength="2" size="2" value="00" required />:
+                                                                        <input type="text" name="tmin" maxlength="2" size="2" value="00" required />:
+                                                                        <input type="text" name="tsec" maxlength="2" size="2" value="00" required />
                                                                     </div>
                                                                     
                                                                     <input type="hidden" name="target" value="cut" />
@@ -164,6 +184,7 @@ const server = http.createServer(async (req, res) => {
                     console.log(stdout)
 
                     res.write(webpage("File","",`<div class="container">
+                                                    ${MAGICK_SVG}
                                                     <h1>Magick</h1>
                                                     <div class="p-3"><pre>${stdout}</pre></div>
                                                     <div>
