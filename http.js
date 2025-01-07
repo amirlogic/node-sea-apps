@@ -17,6 +17,29 @@ function webpage(title='untitled',xhead='',body=''){
                             </head>
                             <body>
                                 ${body}
+                                <script>
+                                    let subrr = document.querySelectorAll("input[type='submit']")
+                                    let xlkrr = document.querySelectorAll("a.xlink")
+
+                                    subrr.forEach((el)=>{
+                                        
+                                            el.addEventListener('click',(e)=>{
+
+                                                    e.currentTarget.value = "Processing..."
+                                                    e.currentTarget.style.cursor = "wait"
+                                                })
+                                        })
+
+                                    xlkrr.forEach((el)=>{
+                                        
+                                            el.addEventListener('click',(e)=>{
+
+                                                    e.currentTarget.textContent = "Processing..."
+                                                    e.currentTarget.style.cursor = "wait"
+                                                })
+                                        })
+
+                                </script>
                             </body>
                         </html>`
 }
@@ -46,16 +69,16 @@ const server = http.createServer(async (req, res) => {
                                                 <option value="magick">Image Magick</option>
                                             </select>
                                         </div>
-                                        <div class="p-2"><input type="text" name="filepath" /></div>
-                                        <div class="p-2"><input type="file" id="fname" name="fname" /></div>
+                                        <div class="p-2"><input type="text" name="filepath" placeholder="Working Dir" required /></div>
+                                        <div class="p-2"><input type="file" id="fname" name="fname" required /></div>
                                         <input type="hidden" id="filename" name="filename" />    
                                         <div class="p-2"><input type="submit" /></div>
                                     </form>
                                 </div>
                                 <div class="p-2">
                                     <div class="w-75 mx-auto row">
-                                        <div class="col"><a href="/magick">Magick Version</a></div>
-                                        <div class="col"><a href="/ffmpeg">FFMPEG Version</a></div>
+                                        <div class="col"><a href="/magick" class="xlink">Magick Version</a></div>
+                                        <div class="col"><a href="/ffmpeg" class="xlink">FFMPEG Version</a></div>
                                     </div>
 
                                 </div>
@@ -87,18 +110,21 @@ const server = http.createServer(async (req, res) => {
 
                 res.write(webpage("File","",`<div class="container">
                                                 <h1>FFMPEG</h1>
-                                                <div><pre>${filePath}</pre></div>
+                                                    <div>
+                                                        <pre>${filePath}</pre>
+                                                    </div>
                                                         <div class="row p-2">
                                                             <div class="col">
                                                                 <form method="get" action="/ffmpeg">
-                                                                    Convert to: <input type="text" name="nwext" size="5" />
+                                                                    Convert to: <input type="text" name="nwext" size="5" required />
                                                                     <input type="hidden" name="target" value="convert" />
                                                                     <input type="hidden" name="fname" value="${filePath}" />
                                                                     <input type="submit" />
                                                                 </form>
                                                             </div>
-                                                            <div class="col"><a href="/ffmpeg?f=${filePath}&target=reverse">Reverse</a></div>
+                                                            <div class="col"><a href="/ffmpeg?f=${filePath}&target=reverse" class="xlink">Reverse</a></div>
                                                         </div>
+                                                        <div class="p-2"><a href="/">home</a></div>
                                                 </div>`))
                 res.end()
 
@@ -119,16 +145,16 @@ const server = http.createServer(async (req, res) => {
                                                     <div class="p-3"><pre>${stdout}</pre></div>
                                                     <div>
                                                         <div class="row">
-                                                            <div class="col"><a href="/magick?f=${filePath}&target=metadata">Metadata</a></div>
+                                                            <div class="col"><a href="/magick?f=${filePath}&target=metadata" class="xlink">Metadata</a></div>
                                                             <div class="col"></div>
                                                         </div>
                                                         <div>
                                                             <form method="get" action="/magick">
-                                                                <div>Convert to: <input type="text" name="convert" placeholder="png" /></div>
-                                                                <div>Resize: <input type="text" name="resize" placeholder="widthxheight" /></div>
+                                                                <div class="p-2">Convert to: <input type="text" name="convert" placeholder="png" size="5" /></div>
+                                                                <div class="p-2">Resize: <input type="text" name="resize" placeholder="widthxheight" /></div>
                                                                 <input type="hidden" name="target" value="modify" />
                                                                 <input type="hidden" name="filepath" value="${filePath}" />
-                                                                <div><input type="submit" /></div>
+                                                                <div class="p-2"><input type="submit" /></div>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -187,7 +213,7 @@ const server = http.createServer(async (req, res) => {
 
                 let resize = params.get('resize') || ""
 
-                //convert = (convert.length > 0) ? `convert `
+                
 
                 let cmd = "magick "
 
@@ -232,9 +258,7 @@ const server = http.createServer(async (req, res) => {
                     res.end()
                 })
 
-                //res.write("\nfwx: "+fwx)
-                //res.write("\next: "+ext)
-                //res.end()
+                
 
             }
             else{
@@ -244,6 +268,7 @@ const server = http.createServer(async (req, res) => {
                     if(err){
     
                         console.error(err)
+                        res.end(err.toString())
                     }
 
                     res.write(webpage("Version","",`<div class="container">
@@ -272,11 +297,11 @@ const server = http.createServer(async (req, res) => {
                     if(err){
     
                         console.error(err)
-                        res.end(err)
+                        res.end(err.toString())
                     }
 
                     res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
-                    res.write(`${cmd}\n${stdout}\nDone!`)
+                    res.write(`${cmd}\n${stdout}\nDone!\n`)
 
                     res.end()
                 })
@@ -301,7 +326,7 @@ const server = http.createServer(async (req, res) => {
                     }
 
                     res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
-                    res.write(`${revcmd}\n${stdout}\nDone!`)
+                    res.write(`${revcmd}\n${stdout}\nDone!\n`)
 
                     res.end()
                 })
@@ -313,6 +338,7 @@ const server = http.createServer(async (req, res) => {
                     if(err){
     
                         console.error(err)
+                        res.end(err.toString())
                     }
 
                     res.write(webpage("Version","",`<div class="container">
