@@ -123,6 +123,27 @@ const server = http.createServer(async (req, res) => {
                                                                 </form>
                                                             </div>
                                                             <div class="col"><a href="/ffmpeg?f=${filePath}&target=reverse" class="xlink">Reverse</a></div>
+                                                            <div class="col">
+                                                                <form method="get" action="/ffmpeg">
+                                                                    <div class="p-2">Split</div>
+                                                                    <div class="p-2">
+                                                                        <span style="width:50px;">From:</span> 
+                                                                        <input type="text" name="fhrs" maxlength="2" size="2" value="00" />:
+                                                                        <input type="text" name="fmin" maxlength="2" size="2" value="00" />:
+                                                                        <input type="text" name="fsec" maxlength="2" size="2" value="00" />
+                                                                    </div>
+                                                                    <div class="p-2">
+                                                                        <span style="width:50px;">To:</span>
+                                                                        <input type="text" name="thrs" maxlength="2" size="2" value="00" />:
+                                                                        <input type="text" name="tmin" maxlength="2" size="2" value="00" />:
+                                                                        <input type="text" name="tsec" maxlength="2" size="2" value="00" />
+                                                                    </div>
+                                                                    
+                                                                    <input type="hidden" name="target" value="cut" />
+                                                                    <input type="hidden" name="fname" value="${filePath}" />
+                                                                    <div class="p-2"><input type="submit" /></div>
+                                                                </form>
+                                                            </div>
                                                         </div>
                                                         <div class="p-2"><a href="/">home</a></div>
                                                 </div>`))
@@ -335,6 +356,31 @@ const server = http.createServer(async (req, res) => {
 
                     res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
                     res.write(`${revcmd}\n${stdout}\nDone!\n`)
+
+                    res.end()
+                })
+            }
+            else if( params.get('target') == 'cut' ){
+
+                let fname = params.get('fname')
+
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+
+                //let ext = fname.substring(fname.lastIndexOf('.'))
+
+                let splitcmd = `ffmpeg -ss ${params.get('fhrs')}:${params.get('fmin')}:${params.get('fsec')} -to ${params.get('thrs')}:${params.get('tmin')}:${params.get('tsec')} -i "${fname}" -c copy "${fnwx}_${params.get('fhrs')+params.get('fmin')+params.get('fsec')}_${params.get('thrs')+params.get('tmin')+params.get('tsec')}.avi"`
+
+                exec(splitcmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err.toString())
+                        return
+                    }
+
+                    res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                    res.write(`${splitcmd}\n${stdout}\nDone!\n`)
 
                     res.end()
                 })
