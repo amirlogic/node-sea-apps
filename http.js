@@ -136,6 +136,8 @@ const server = http.createServer(async (req, res) => {
                     if(err){
     
                         console.error(err)
+                        res.end(err.toString())
+                        return
                     }
 
                     console.log(stdout)
@@ -187,6 +189,7 @@ const server = http.createServer(async (req, res) => {
                         console.error(err)
                         res.write(err)
                         res.end()
+                        return
                     }
 
                     res.write(webpage("Image Metadata","",`<div class="container">
@@ -269,6 +272,7 @@ const server = http.createServer(async (req, res) => {
     
                         console.error(err)
                         res.end(err.toString())
+                        return
                     }
 
                     res.write(webpage("Version","",`<div class="container">
@@ -292,15 +296,18 @@ const server = http.createServer(async (req, res) => {
 
                 //let ext = fname.substring(fname.lastIndexOf('.'))
 
+                res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+
                 exec(cmd,(err,stdout)=>{
 
                     if(err){
     
                         console.error(err)
                         res.end(err.toString())
+                        return
                     }
 
-                    res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                    
                     res.write(`${cmd}\n${stdout}\nDone!\n`)
 
                     res.end()
@@ -323,6 +330,7 @@ const server = http.createServer(async (req, res) => {
     
                         console.error(err)
                         res.end(err.toString())
+                        return
                     }
 
                     res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
@@ -339,6 +347,7 @@ const server = http.createServer(async (req, res) => {
     
                         console.error(err)
                         res.end(err.toString())
+                        return null
                     }
 
                     res.write(webpage("Version","",`<div class="container">
