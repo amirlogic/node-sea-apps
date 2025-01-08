@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build":".\build-win.bat",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Amir Hachaichi",
   "license": "ISC",
   "dependencies": {
     "mupdf": "^1.1.0"

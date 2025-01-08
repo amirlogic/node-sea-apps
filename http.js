@@ -164,8 +164,33 @@ const server = http.createServer(async (req, res) => {
                                                                     <div class="p-2"><input type="submit" /></div>
                                                                 </form>
                                                             </div>
+                                                        
                                                         </div>
+
+                                                        <div class="row p-2">
+
+                                                            <div class="col">Screenshot
+                                                                <form method="get" action="/ffmpeg">
+                                                                    <div class="p-2">
+                                                                        <input type="text" name="hrs" maxlength="2" size="2" value="00" required />:
+                                                                        <input type="text" name="min" maxlength="2" size="2" value="00" required />:
+                                                                        <input type="text" name="sec" maxlength="2" size="2" value="00" required />
+                                                                        <input type="hidden" name="target" value="screenshot" />
+                                                                        <input type="hidden" name="fname" value="${filePath}" />
+                                                                    </div>
+                                                                    <div class="p-2">
+                                                                        # frames: <input type="number" name="frames" size="3" value="1" />
+                                                                        <input type="submit" />
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+
+                                                            <div class="col">Image overlay</div>
+
+                                                        </div>
+
                                                         <div class="p-2"><a href="/">home</a></div>
+
                                                 </div>`))
                 res.end()
 
@@ -334,7 +359,7 @@ const server = http.createServer(async (req, res) => {
 
                 let fnwx = fname.substring(0,fname.lastIndexOf('.'))
 
-                let cmd = `ffmpeg -i "${fname}" "${fnwx}.${params.get('nwext')}"`
+                let cmd = `ffmpeg -i "${fname}" -map 0 -c copy "${fnwx}.${params.get('nwext')}"`
 
                 //let ext = fname.substring(fname.lastIndexOf('.'))
 
@@ -405,6 +430,54 @@ const server = http.createServer(async (req, res) => {
 
                     res.end()
                 })
+            }
+            else if( params.get('target') == 'screenshot' ){
+
+                let fname = params.get('fname')
+
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+
+                let screencmd = `ffmpeg -ss ${params.get('hrs')}:${params.get('min')}:${params.get('sec')} -i "${fname}" -frames:v ${params.get('frames')} ${fnwx}.png`
+
+                exec(screencmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err.toString())
+                        return
+                    }
+
+                    res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                    res.write(`${screencmd}\n${stdout}\nDone!\n`)
+
+                    res.end()
+                })
+
+            }
+            else if( params.get('target') == 'overlay' ){
+
+                let fname = params.get('fname')
+
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+
+                let overlaycmd = `ffmpeg -ss ${params.get('hrs')}:${params.get('min')}:${params.get('sec')} -i "${fname}" -frames:v ${params.get('frames')} ${fnwx}.png`
+
+                exec(overlaycmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err.toString())
+                        return
+                    }
+
+                    res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                    res.write(`${overlaycmd}\n${stdout}\nDone!\n`)
+
+                    res.end()
+                })
+
             }
             else{
 
