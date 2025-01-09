@@ -33,6 +33,7 @@ function webpage(title='untitled',xhead='',body=''){
                             <head>
                                 <title>${title}</title>
                                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+                                <meta charset="UTF-8">
                                 ${xhead}
                             </head>
                             <body>
@@ -145,7 +146,7 @@ const server = http.createServer(async (req, res) => {
                                                             <div class="col"><a href="/ffmpeg?f=${filePath}&target=reverse" class="xlink">Reverse</a></div>
                                                             <div class="col">
                                                                 <form method="get" action="/ffmpeg">
-                                                                    <div class="p-2">Split</div>
+                                                                    <div class="p-2">✂️ Split</div>
                                                                     <div class="p-2">
                                                                         <span>From:</span> 
                                                                         <input type="text" name="fhrs" maxlength="2" size="2" value="00" required />:
@@ -169,7 +170,7 @@ const server = http.createServer(async (req, res) => {
 
                                                         <div class="row p-2">
 
-                                                            <div class="col">Screenshot
+                                                            <div class="col">📷 Screenshot
                                                                 <form method="get" action="/ffmpeg">
                                                                     <div class="p-2">
                                                                         <input type="text" name="hrs" maxlength="2" size="2" value="00" required />:

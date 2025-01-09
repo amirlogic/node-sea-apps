@@ -132,3 +132,4 @@ dist
 # dist
 *.exe
 *.blob
+sea-config.json
