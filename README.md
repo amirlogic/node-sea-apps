@@ -15,5 +15,6 @@ Convert and Reverse
 
 ## Notes
 
+https://alistairshepherd.uk/writing/js-library-bundling-esbuild/
 
 
