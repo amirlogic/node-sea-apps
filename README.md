@@ -10,7 +10,7 @@ Convert and resize
 
 ## FFMEPG
 
-Convert and Reverse
+Convert, Reverse, Split and Snapshot
 
 
 ## Notes
