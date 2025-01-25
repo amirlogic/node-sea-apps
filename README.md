@@ -2,6 +2,11 @@
 
 Web-based App to control ImageMagick and FFMEPG.
 
+Starts a webserver at ```localhost:9000```
+
+VanillaJs only, can be customized
+
+FFMPEG and/or ImageMagick have to be installed
 
 ## ImageMagick
 
