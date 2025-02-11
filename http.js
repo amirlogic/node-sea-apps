@@ -221,14 +221,33 @@ const server = http.createServer(async (req, res) => {
                                                         <div>
                                                             <form method="get" action="/magick">
                                                                 <div class="p-2">Convert to: <input type="text" name="convert" placeholder="png" size="5" /></div>
-                                                                <div class="p-2">Resize: <input type="text" name="resize" placeholder="widthxheight" /></div>
+                                                                <div class="p-2">Resize: <input type="text" name="resize" placeholder="widthxheight or x%" /></div>
+                                                                <div class="p-2">
+                                                                    <select id="mgckxcmdsel">
+                                                                        <option value="">More options...</option>
+                                                                        <option value="transparency">Transparency</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="p-2"><input type="text" name="xcmd" id="magickxcmd" placeholder="Extra commands" size="60" maxlength="200" /></div>
                                                                 <input type="hidden" name="target" value="modify" />
                                                                 <input type="hidden" name="filepath" value="${filePath}" />
                                                                 <div class="p-2"><input type="submit" /></div>
                                                             </form>
                                                         </div>
                                                     </div>
-                                                 </div>`))
+                                                 </div>
+                                                 <script>
+
+                                                    document.getElementById('mgckxcmdsel').addEventListener('click',(e)=>{
+
+                                                                            if(e.currentTarget.value == 'transparency'){
+
+                                                                                document.getElementById('magickxcmd').value = "transparency test"
+                                                                            }
+                                                                            
+                                                                        })
+
+                                                 </script>`))
 
                     res.end()
                 })
