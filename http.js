@@ -242,7 +242,7 @@ const server = http.createServer(async (req, res) => {
 
                                                                             if(e.currentTarget.value == 'transparency'){
 
-                                                                                document.getElementById('magickxcmd').value = "transparency test"
+                                                                                document.getElementById('magickxcmd').value = "-fuzz 20% -transparent white"
                                                                             }
                                                                             
                                                                         })
@@ -303,7 +303,7 @@ const server = http.createServer(async (req, res) => {
 
                 let resize = params.get('resize') || ""
 
-                
+                let xcmd = params.get('xcmd') || ""
 
                 let cmd = "magick "
 
@@ -325,6 +325,9 @@ const server = http.createServer(async (req, res) => {
                     cmd += `-resize ${resize} `
                     suffix = `_${resize}`
                 }
+
+                // xcmd
+                cmd += `${xcmd} `
 
                 // Output file
                 cmd += `"${fwx}${suffix}${newext}"`
