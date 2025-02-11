@@ -4,14 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build":".\\build-win.bat",
-    "start":"node --watch http.js",
+    "build": ".\\build-win.bat",
+    "start": "node --watch http.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Amir Hachaichi",
-  "license": "ISC",
-  "dependencies": {
-    "mupdf": "^1.1.0"
-  }
+  "license": "ISC"
 }
