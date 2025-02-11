@@ -1,1 +1,1 @@
-{ "main": "http.js", "output": "sea-prep.blob", "disableExperimentalSEAWarning": true } 
+{ "main": "http.js", "output": "sea-prep.blob" } 
