@@ -183,13 +183,49 @@ const server = http.createServer(async (req, res) => {
                                                                         <input type="hidden" name="fname" value="${filePath}" />
                                                                     </div>
                                                                     <div class="p-2">
-                                                                        # frames: <input type="number" name="frames" size="3" value="1" />
+                                                                        # frames: <input type="number" name="frames" size="3" value="1" readonly />
                                                                         <input type="submit" />
                                                                     </div>
                                                                 </form>
                                                             </div>
 
                                                             <div class="col">Image overlay</div>
+
+                                                        </div>
+
+                                                        <div class="row p-2">
+
+                                                            <div class="col">Change Scale
+
+                                                                <form method="get" action="/ffmpeg">
+                                                                    <div class="p-2">
+                                                                        <input type="text" name="hrs" maxlength="2" size="2" value="00" required />
+                                                                        
+                                                                        <input type="hidden" name="target" value="scale" />
+                                                                        <input type="hidden" name="fname" value="${filePath}" />
+                                                                    </div>
+                                                                    <div class="p-2">
+                                                                        <input type="submit" />
+                                                                    </div>
+                                                                </form>
+
+                                                            </div>
+
+                                                            <div class="col">Speed
+
+                                                                <form method="get" action="/ffmpeg">
+                                                                    <div class="p-2">
+                                                                        Multiplier: <input type="text" name="m" maxlength="4" size="3" value="1" required />
+                                                                        
+                                                                        <input type="hidden" name="target" value="speed" />
+                                                                        <input type="hidden" name="fname" value="${filePath}" />
+                                                                    </div>
+                                                                    <div class="p-2">
+                                                                        <input type="submit" />
+                                                                    </div>
+                                                                </form>
+
+                                                            </div>
 
                                                         </div>
 
@@ -359,6 +395,8 @@ const server = http.createServer(async (req, res) => {
             }
             else{
 
+                res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/html'});
+
                 exec(`magick -version`,(err,stdout)=>{
 
                     if(err){
@@ -417,6 +455,9 @@ const server = http.createServer(async (req, res) => {
 
                 let revcmd = `ffmpeg -i "${fname}" -vf reverse "${fnwx}_reversed${ext}"`
 
+                res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                res.write(`${revcmd}\n`)
+
                 exec(revcmd,(err,stdout)=>{
 
                     if(err){
@@ -426,9 +467,7 @@ const server = http.createServer(async (req, res) => {
                         return
                     }
 
-                    res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
-                    res.write(`${revcmd}\n${stdout}\nDone!\n`)
-
+                    res.write(`${stdout}\nDone!\n`)
                     res.end()
                 })
             }
@@ -505,7 +544,43 @@ const server = http.createServer(async (req, res) => {
                 })
 
             }
+            else if( params.get('target') == 'speed' ){
+
+                let fname = params.get('fname')
+
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+
+                let ext = fname.substring(fname.lastIndexOf('.'))
+
+                let multiplier = params.get('m')
+
+                let spcmd = `ffmpeg -i "${fname}" -filter:v "setpts=${multiplier}*PTS" -an "${fnwx}_${multiplier}${ext}"`
+
+                res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                res.write(`${spcmd}\n`)
+
+                exec(spcmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err.toString())
+                        return
+                    }
+
+                    res.write(`${stdout}\nDone!\n`)
+                    res.end()
+                })
+
+            }
+            else if( params.get('target') == 'scale' ){
+
+
+
+            }
             else{
+
+                res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/html'});
 
                 exec(`ffmpeg -version`,(err,stdout)=>{
 
