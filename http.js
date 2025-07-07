@@ -189,21 +189,49 @@ const server = http.createServer(async (req, res) => {
                                                                 </form>
                                                             </div>
 
-                                                            <div class="col">Image overlay</div>
+                                                            <div class="col">🎞️ Image overlay</div>
+
+                                                                <form method="get" action="/ffmpeg">
+                                                                    <div class="p-2">
+
+
+
+                                                                    </div>
+                                                                    <div class="p-2">
+                                                                        <input type="submit" />
+                                                                    </div>
+                                                                </form>
 
                                                         </div>
 
                                                         <div class="row p-2">
 
-                                                            <div class="col">Change Scale
+                                                            <div class="col">📐 Change Scale
 
                                                                 <form method="get" action="/ffmpeg">
+
                                                                     <div class="p-2">
-                                                                        <input type="text" name="hrs" maxlength="2" size="2" value="00" required />
+
+                                                                        Mode:
+                                                                        <select name="sm">
+
+                                                                            <option value="res">Resolution w:h</option>
+                                                                            <option value="asrth">Aspect ratio height</option>
+                                                                            <option value="asrtw">Aspect ratio width</option>
+                                                                            <option value="factor">Factor /n or *n</option>
+
+                                                                        </select>
+
+                                                                    </div>
+
+                                                                    <div class="p-2">
+
+                                                                        <input type="text" name="sv" maxlength="20" size="10" value="w:h" required />
                                                                         
                                                                         <input type="hidden" name="target" value="scale" />
                                                                         <input type="hidden" name="fname" value="${filePath}" />
                                                                     </div>
+
                                                                     <div class="p-2">
                                                                         <input type="submit" />
                                                                     </div>
@@ -211,7 +239,7 @@ const server = http.createServer(async (req, res) => {
 
                                                             </div>
 
-                                                            <div class="col">Speed
+                                                            <div class="col">🕓 Speed
 
                                                                 <form method="get" action="/ffmpeg">
                                                                     <div class="p-2">
@@ -575,7 +603,55 @@ const server = http.createServer(async (req, res) => {
             }
             else if( params.get('target') == 'scale' ){
 
+                let fname = params.get('fname')
 
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+
+                let ext = fname.substring(fname.lastIndexOf('.'))
+
+                let scmode = params.get('sm')
+
+                let scvalue = params.get('sv')
+
+                if(scmode == "res"){
+
+                    fstr = `scale=${scvalue}`
+
+                }
+                else if(scmode == "factor"){
+
+                    fstr = `scale=iw${scvalue}:ih${scvalue}`
+                }
+                else if(scmode == "asrth"){
+
+                    fstr = `scale=-2:${scvalue}`
+                }
+                else if(scmode == "asrtw"){
+
+                    fstr = `scale=${scvalue}:-2`
+                }
+                else{
+                    
+                    fstr = ""
+                }
+
+                let scmd = `ffmpeg -i "${fname}" -vf "${fstr}" "${fnwx}_${scvalue.replaceAll(/[/\*:]/g,'')}${ext}"`
+
+                res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                res.write(`${scmd}\n`)
+
+                exec(scmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err.toString())
+                        return
+                    }
+
+                    res.write(`${stdout}\nDone!\n`)
+                    res.end()
+                })
 
             }
             else{
