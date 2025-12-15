@@ -8,7 +8,10 @@ VanillaJs only, can be customized
 
 FFMPEG and/or ImageMagick have to be installed
 
+
 ## ImageMagick
+
+ImageMagick v7+ required
 
 Convert and resize
 
