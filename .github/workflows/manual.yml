@@ -24,9 +24,9 @@ jobs:
           echo "node=$(node -e 'console.log(process.argv[0]);')" >>
           $env:GITHUB_OUTPUT
 
-      #- name: Install Windows SDK (choco)
-        #shell: pwsh
-        #run: choco install -y windows-sdk-10.1
+      - name: Install Windows SDK (choco)
+        shell: pwsh
+        run: choco install -y windows-sdk-10.1
 
       - name: Find signtool.exe
         id: find_signtool
