@@ -1,7 +1,7 @@
 {
   "name": "node-sea-mediaweb",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Web based FFMPEG and ImageMagick GUI",
   "main": "index.js",
   "scripts": {
     "build": ".\\build-win.bat",
