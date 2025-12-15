@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 22
 
       - name: Install dependencies (none)
         run: npm install
@@ -24,9 +24,9 @@ jobs:
           echo "node=$(node -e 'console.log(process.argv[0]);')" >>
           $env:GITHUB_OUTPUT
 
-      - name: Install Windows SDK (choco)
-        shell: pwsh
-        run: choco install -y windows-sdk-10.1
+      #- name: Install Windows SDK (choco)
+        #shell: pwsh
+        #run: choco install -y windows-sdk-10.1
 
       - name: Build SEA Executable
         uses: bryopsida/node-sea-action@v1
@@ -34,12 +34,12 @@ jobs:
           executable-name: http.exe
           sea-config-path: ./sea-config.json
           working-dir: .
-          output-dir: build
+          output-dir: .
           node-path: ${{ steps.find-node.outputs.node }}
 
       - name: Upload executable
         uses: actions/upload-artifact@v4
         with:
           name: win-sea-exe
-          path: build/
+          #path: build
           if-no-files-found: error
