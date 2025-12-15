@@ -257,6 +257,37 @@ const server = http.createServer(async (req, res) => {
 
                                                         </div>
 
+                                                        <div class="row p-2">
+
+                                                            <div class="col">Framerate
+
+                                                                <form method="get" action="/ffmpeg">
+
+                                                                    <div class="p-2">
+
+                                                                        Change to: <input type="text" name="fps" maxlength="4" size="3" value="24" required /> fps
+
+                                                                        <input type="hidden" name="target" value="framerate" />
+                                                                        <input type="hidden" name="fname" value="${filePath}" />
+
+                                                                    </div>
+
+                                                                    <div class="p-2">
+                                                                        <input type="submit" />
+                                                                    </div>
+
+                                                                </form>
+
+                                                            </div>
+
+                                                            <div class="col">
+
+
+
+                                                            </div>
+
+                                                        </div>
+
                                                         <div class="p-2"><a href="/">home</a></div>
 
                                                 </div>`))
@@ -505,9 +536,9 @@ const server = http.createServer(async (req, res) => {
 
                 let fnwx = fname.substring(0,fname.lastIndexOf('.'))
 
-                //let ext = fname.substring(fname.lastIndexOf('.'))
+                let ext = fname.substring(fname.lastIndexOf('.'))
 
-                let splitcmd = `ffmpeg -ss ${params.get('fhrs')}:${params.get('fmin')}:${params.get('fsec')} -to ${params.get('thrs')}:${params.get('tmin')}:${params.get('tsec')} -i "${fname}" -c copy "${fnwx}_${params.get('fhrs')+params.get('fmin')+params.get('fsec')}_${params.get('thrs')+params.get('tmin')+params.get('tsec')}.avi"`
+                let splitcmd = `ffmpeg -ss ${params.get('fhrs')}:${params.get('fmin')}:${params.get('fsec')} -to ${params.get('thrs')}:${params.get('tmin')}:${params.get('tsec')} -i "${fname}" -c copy "${fnwx}_${params.get('fhrs')+params.get('fmin')+params.get('fsec')}_${params.get('thrs')+params.get('tmin')+params.get('tsec')}.${ext}"`
 
                 exec(splitcmd,(err,stdout)=>{
 
@@ -653,6 +684,37 @@ const server = http.createServer(async (req, res) => {
                     res.end()
                 })
 
+            }
+            else if( params.get('target') == 'framerate' ){
+
+                let fname = params.get('fname')
+                let fnwx = fname.substring(0,fname.lastIndexOf('.'))
+                let ext = fname.substring(fname.lastIndexOf('.'))
+
+                // Sanitize fps input to digits and optional decimal point
+                let fps = (params.get('fps') || '24').toString().replaceAll(/[^0-9.]/g, '')
+                if(fps.length === 0) fps = '24'
+
+                // Use fps filter to set output framerate and copy audio
+                let fpscmd = `ffmpeg -i "${fname}" -filter:v "fps=${fps}" -c:a copy "${fnwx}_fps${fps}${ext}"`
+
+                res.writeHead(200, {'Connection': 'Keep-Alive','Content-Type': 'text/plain'});
+                res.write(`${fpscmd}\n`)
+
+                exec(fpscmd,(err,stdout)=>{
+
+                    if(err){
+    
+                        console.error(err)
+                        res.end(err.toString())
+                        return
+                    }
+
+                    res.write(`${stdout}\nDone!\n`)
+                    res.end()
+                })
+
+                
             }
             else{
 
