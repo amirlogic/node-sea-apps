@@ -24,6 +24,10 @@ jobs:
           echo "node=$(node -e 'console.log(process.argv[0]);')" >>
           $env:GITHUB_OUTPUT
 
+      - name: Install Windows SDK (choco)
+        shell: pwsh
+        run: choco install -y windows-sdk-10.1
+
       - name: Build SEA Executable
         uses: bryopsida/node-sea-action@v1
         with:
