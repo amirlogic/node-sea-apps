@@ -1,1 +1,41 @@
+name: Build SEA [Linux]
 
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install dependencies (none)
+        run: npm install
+
+      - name: Find Node
+        id: find-node
+        run:
+          echo "node=$(node -e 'console.log(process.argv[0]);')" >>
+          $env:GITHUB_OUTPUT
+
+      - name: Build SEA Executable
+        uses: bryopsida/node-sea-action@v1
+        with:
+          executable-name: http.exe
+          sea-config-path: ./sea-config.json
+          working-dir: .
+          output-dir: .
+          node-path: ${{ steps.find-node.outputs.node }}
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-sea
+          #path: build
+          if-no-files-found: error
