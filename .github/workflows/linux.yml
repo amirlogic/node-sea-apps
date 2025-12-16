@@ -26,7 +26,7 @@ jobs:
       - name: Build SEA Executable
         uses: bryopsida/node-sea-action@v1
         with:
-          executable-name: http.exe
+          executable-name: mediaweb
           sea-config-path: ./sea-config.json
           working-dir: .
           output-dir: .
