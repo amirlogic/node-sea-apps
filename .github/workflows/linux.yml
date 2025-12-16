@@ -29,12 +29,12 @@ jobs:
           executable-name: http.exe
           sea-config-path: ./sea-config.json
           working-dir: .
-          output-dir: .
+          output-dir: /build
           node-path: ${{ steps.find-node.outputs.node }}
 
       - name: Upload executable
         uses: actions/upload-artifact@v4
         with:
           name: linux-sea
-          #path: build
+          path: /build
           if-no-files-found: error
