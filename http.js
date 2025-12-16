@@ -259,7 +259,7 @@ const server = http.createServer(async (req, res) => {
 
                                                         <div class="row p-2">
 
-                                                            <div class="col">Framerate
+                                                            <div class="col">🎞️ Framerate
 
                                                                 <form method="get" action="/ffmpeg">
 
