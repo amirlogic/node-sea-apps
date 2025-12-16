@@ -751,4 +751,4 @@ const server = http.createServer(async (req, res) => {
 // Have the server listen on port 9000
 server.listen(SERVER_PORT)
 
-exec(`explorer http://localhost:${SERVER_PORT}`)
+exec(`xdg-open http://localhost:${SERVER_PORT}`)
