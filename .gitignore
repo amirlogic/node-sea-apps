@@ -133,3 +133,4 @@ dist
 *.exe
 *.blob
 sea-config.json
+perry.ps1
