@@ -139,14 +139,32 @@ const server = http.createServer(async (req, res) => {
                                                     </div>
                                                         <div class="row p-2">
                                                             <div class="col">
-                                                                <form method="get" action="/ffmpeg">
-                                                                    Convert to: <input type="text" name="nwext" size="5" required />
-                                                                    <input type="hidden" name="target" value="convert" />
-                                                                    <input type="hidden" name="fname" value="${filePath}" />
-                                                                    <input type="submit" />
-                                                                </form>
+                                                                <div>
+                                                                    <form method="get" action="/ffmpeg">
+                                                                        Convert to: <input type="text" name="nwext" size="5" required />
+                                                                        <input type="hidden" name="target" value="convert" />
+                                                                        <input type="hidden" name="fname" value="${filePath}" />
+                                                                        <input type="submit" />
+                                                                    </form>
+                                                                </div>
+                                                                <div>
+                                                                    <form method="get" action="/ffmpeg">
+                                                                        🎧 Audio:
+                                                                        <select name="afmt">
+                                                                            <option value="mp3">MP3</option>
+                                                                            <option value="m4a">M4A</option>
+                                                                        </select>
+                                                                        <input type="text" name="abr" value="192k" size="5" />
+                                                                        <input type="hidden" name="target" value="audio" />
+                                                                        <input type="hidden" name="fname" value="${filePath}" />
+                                                                        <input type="submit" value="Extract" />
+                                                                    </form>
+                                                                </div>
                                                             </div>
-                                                            <div class="col"><a href="/ffmpeg?f=${filePath}&target=reverse" class="xlink">Reverse</a></div>
+                                                            <div class="col">
+                                                                <a href="/ffmpeg?f=${filePath}&target=reverse" class="xlink">Reverse</a>
+
+                                                            </div>
                                                             <div class="col">
                                                                 <form method="get" action="/ffmpeg">
                                                                     <div class="p-2">✂️ Split</div>
@@ -503,6 +521,26 @@ const server = http.createServer(async (req, res) => {
                     res.end()
                 })
 
+            }
+            else if (params.get('target') == 'audio') {
+
+                let fname = params.get('fname')
+                let fnwx = fname.substring(0, fname.lastIndexOf('.'))
+
+                let format = params.get('afmt') || 'mp3'
+                let bitrate = (params.get('abr') || '192k').replace(/[^0-9k]/g,'')
+
+                let cmd = format === 'mp3'
+                    ? `ffmpeg -i "${fname}" -vn -c:a libmp3lame -b:a ${bitrate} "${fnwx}.mp3"`
+                    : `ffmpeg -i "${fname}" -vn -c:a aac -b:a ${bitrate} "${fnwx}.m4a"`
+
+                res.writeHead(200, {'Content-Type': 'text/plain'})
+                res.write(cmd + "\n")
+
+                exec(cmd,(err,stdout)=>{
+                    if(err) return res.end(err.toString())
+                    res.end(stdout + "\nDone")
+                })
             }
             else if( params.get('target') == 'reverse' ){
 
